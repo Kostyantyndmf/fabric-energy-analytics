@@ -1,0 +1,39 @@
+-- 1. Reconstruction de la Dimension Pays (Nettoyée des agrégats)
+DROP TABLE IF EXISTS dbo.dim_country;
+CREATE TABLE dbo.dim_country AS
+SELECT 
+    DENSE_RANK() OVER (ORDER BY country) AS country_id,
+    country,
+    iso_code
+FROM [LH_Silver].[dbo].[energy]
+WHERE country IS NOT NULL 
+  AND iso_code IS NOT NULL          
+  AND iso_code NOT LIKE 'OWID_%'    
+GROUP BY country, iso_code;
+
+-- 2. Reconstruction de la Dimension Calendrier (Post-1985)
+DROP TABLE IF EXISTS dbo.dim_calendar;
+CREATE TABLE dbo.dim_calendar AS
+SELECT DISTINCT
+    year,
+    (year / 100) + 1 AS century,
+    (year / 10) * 10 AS decade
+FROM [LH_Silver].[dbo].[energy]
+WHERE year >= 1985;
+
+-- 3. Reconstruction de la Table de Faits (Filtrée et alignée)
+DROP TABLE IF EXISTS dbo.fact_energy;
+CREATE TABLE dbo.fact_energy AS
+SELECT
+    c.country_id,
+    s.year,
+    s.population,
+    s.gdp,
+    s.energy_per_gdp,
+    s.carbon_intensity_elec,
+    s.renewables_electricity,
+    s.fossil_electricity,
+    s.low_carbon_electricity
+FROM [LH_Silver].[dbo].[energy] s
+INNER JOIN dbo.dim_country c ON s.country = c.country AND s.iso_code = c.iso_code
+WHERE s.year >= 1985;
