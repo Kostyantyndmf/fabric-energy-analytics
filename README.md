@@ -10,6 +10,13 @@ An end-to-end Analytics Engineering project built within **Microsoft Fabric**, u
 * **Semantic Layer:** Power BI Semantic Model via **DirectLake** mode (No import, zero latency)
 * **Data Visualization:** Power BI Corporate Executive Dashboard
 
+* ## 📂 Data Source & Provenance
+
+The pipeline processes global, public-vetted datasets provided by **Our World in Data (OWID)**. 
+* **Energy Metrics:** Global production, consumption, and low-carbon split (Renewables/Nuclear).
+* **Economic Metrics:** Historical GDP, population, and carbon intensity metrics ($gCO_2/kWh$).
+* **Raw Format:** Ingested as uncompressed, multi-megabyte raw CSV files directly mimicking a production landing zone in the Bronze layer.
+
 ## 📊 Data Pipeline Architecture (Medallion)
 
 1.  **Bronze Layer:** Raw CSV ingestion from *Our World in Data* into OneLake.
